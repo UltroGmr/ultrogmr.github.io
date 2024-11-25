@@ -1,7 +1,16 @@
 body {
-    background-color: darkblue;
+    background: rgb(0, 0, 97);
 }
 
 p {
+    /* #79DAFA in blue div */
     color: deepskyblue;
+}
+
+h1 {
+    color: aliceblue;
+}
+
+div {
+    color: #0626DD;
 }
