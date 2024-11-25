@@ -5,10 +5,12 @@ body {
 p {
     /* #79DAFA in blue div */
     color: deepskyblue;
+    font-family:sans-serif;
 }
 
 h1 {
     color: aliceblue;
+    font-family:sans-serif;
 }
 
 div {
