@@ -1,4 +1,4 @@
-let themes = ["water.css", "lava.css"]
+let themes = ["water.css", "lava.css", "royal.css"]
 
 const urlParams = new URLSearchParams(window.location.search);
 
