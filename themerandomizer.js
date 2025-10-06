@@ -2,9 +2,7 @@ let themes = ["water.css", "lava.css"]
 
 const urlParams = new URLSearchParams(window.location.search);
 
-console.log(urlParams);
-
-if urlParams.has("theme") {
+if (urlParams.has("theme")) {
   let themeId = urlParams.get("theme");
   document.getElementById("styles").href = themeId;
 } else {
