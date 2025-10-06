@@ -34,7 +34,7 @@ div {
 }
 
 a, a:link, a:visited, a:hover, a:active {
-    color: rgb(171, 216, 255);
+    color: rgb(255, 216, 171);
     font-family:sans-serif;
     font-weight:bold;
     font-size:20px;
