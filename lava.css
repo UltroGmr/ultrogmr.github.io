@@ -46,4 +46,5 @@ a, a:link, a:visited, a:hover, a:active {
 }
 .div2 {
     background: #DD2606;
+    float:right; width:20%; border-radius:10px;
 }
