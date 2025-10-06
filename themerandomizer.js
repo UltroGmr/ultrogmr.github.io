@@ -1,15 +1,15 @@
-themes = ["water.css", "lava.css"]
+let themes = ["water.css", "lava.css"]
 
 const urlParams = new URLSearchParams(window.location.search);
 
-console.log(urlParams)
+console.log(urlParams);
 
 if urlParams.has("theme") {
   let themeId = urlParams.get("theme");
-  document.getElementById("styles").href = themeId
+  document.getElementById("styles").href = themeId;
 } else {
-  let themeId = themes[ Math.floor(Math.random() * 2.0) ]
-  urlParams.set("theme", themeId)
-  document.getElementById("styles").href = themeId
-  console.log(themeId)
+  let themeId = themes[ Math.floor(Math.random() * 2.0) ];
+  urlParams.set("theme", themeId);
+  document.getElementById("styles").href = themeId;
+  console.log(themeId);
 }
