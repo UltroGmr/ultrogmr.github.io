@@ -1,0 +1,50 @@
+body {
+    background: rgb(70, 0, 70);
+}
+
+p {
+    /* #79DAFA in blue div */
+    color: #FFBF00;
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+h1 {
+    color: rgb(250, 210, 60);
+    font-family:sans-serif;
+    font-size:40px;
+}
+
+h2 {
+    color: rgb(240, 200, 50);
+    font-family:sans-serif;
+    font-size:28px;
+    font-weight:bold;
+    margin:10px;
+    padding:0;
+}
+
+h2 + h1{
+    margin:10px;
+}
+
+div {
+    color: #DD06DD;
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    color: rgb(255, 216, 100);
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.div1 {
+    background: rgb(105, 12, 105);
+    margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
+}
+.div2 {
+    background: #881688;
+    float:right; width:20%; border-radius:10px;
+}
