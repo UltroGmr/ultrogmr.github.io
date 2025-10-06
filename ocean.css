@@ -42,7 +42,9 @@ a, a:link, a:visited, a:hover, a:active {
 
 .div1 {
     background: rgb(0, 12, 125);
+    margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
 }
 .div2 {
+    
     background: #0626DD;
 }
