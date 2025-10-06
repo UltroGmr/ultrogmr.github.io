@@ -1,0 +1,50 @@
+body {
+    background: rgb(0, 0, 97);
+}
+
+p {
+    /* #79DAFA in blue div */
+    color: deepskyblue;
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+h1 {
+    color: aliceblue;
+    font-family:sans-serif;
+    font-size:40px;
+}
+
+h2 {
+    color: rgb(160, 200, 240);
+    font-family:sans-serif;
+    font-size:28px;
+    font-weight:bold;
+    margin:10px;
+    padding:0;
+}
+
+h2 + h1{
+    margin:10px;
+}
+
+div {
+    color: #0626DD;
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    color: rgb(171, 216, 255);
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.div1 {
+    background: rgb(0, 12, 125);
+    margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
+}
+.div2 {
+    background: #1616AA;
+    float:right; width:20%; border-radius:10px;
+}
