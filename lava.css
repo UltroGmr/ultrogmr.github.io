@@ -1,0 +1,41 @@
+body {
+    background: rgb(97, 46, 0);
+}
+
+p {
+    /* #79DAFA in blue div */
+    color: #FFBF00;
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+h1 {
+    color: antiquewhite;
+    font-family:sans-serif;
+    font-size:40px;
+}
+
+h2 {
+    color: rgb(240, 200, 160);
+    font-family:sans-serif;
+    font-size:28px;
+    font-weight:bold;
+    margin:10px;
+    padding:0;
+}
+
+h2 + h1{
+    margin:10px;
+}
+
+div {
+    color: #DD2606;
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    color: rgb(171, 216, 255);
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
