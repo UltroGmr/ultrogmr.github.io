@@ -1,0 +1,50 @@
+body {
+    background: rgb(36, 36, 36);
+}
+
+p {
+    /* #79DAFA in blue div */
+    color: rgb(167, 167, 167);
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+h1 {
+    color: rgb(192, 192, 192);
+    font-family:sans-serif;
+    font-size:40px;
+}
+
+h2 {
+    color: rgb(202, 202, 202);
+    font-family:sans-serif;
+    font-size:28px;
+    font-weight:bold;
+    margin:10px;
+    padding:0;
+}
+
+h2 + h1{
+    margin:10px;
+}
+
+div {
+    color: #0626DD;
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    color: rgb(170, 170, 170);
+    font-family:sans-serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.div1 {
+    background: rgb(59, 59, 59);
+    margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
+}
+.div2 {
+    background: #535353;
+    float:right; width:20%; border-radius:10px;
+}
