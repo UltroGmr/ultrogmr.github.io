@@ -33,7 +33,7 @@ h2 + h1{
 }
 
 div {
-    color: #d40a15;
+    color: #b3070f;
 }
 
 a, a:link, a:visited, a:hover, a:active {
@@ -45,10 +45,10 @@ a, a:link, a:visited, a:hover, a:active {
 }
 
 .div1 {
-    background: rgb(105, 12, 27);
+    background: rgb(95, 10, 24);
     margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
 }
 .div2 {
-    background: #881625;
+    background: #74121a;
     float:right; width:20%; border-radius:10px;
 }
