@@ -1,23 +1,23 @@
 body {
-    background: rgb(70, 0, 70);
+    background: rgb(51, 0, 51);
 }
 
 p {
     /* #79DAFA in blue div */
-    color: #FFBF00;
+    color: #f3d240;
     font-family:sans-serif;
     font-weight:bold;
     font-size:20px;
 }
 
 h1 {
-    color: rgb(250, 210, 60);
+    color: rgb(247, 238, 113);
     font-family:sans-serif;
     font-size:40px;
 }
 
 h2 {
-    color: rgb(240, 200, 50);
+    color: rgb(247, 235, 77);
     font-family:sans-serif;
     font-size:28px;
     font-weight:bold;
@@ -30,21 +30,21 @@ h2 + h1{
 }
 
 div {
-    color: #DD06DD;
+    color: #a705a7;
 }
 
 a, a:link, a:visited, a:hover, a:active {
-    color: rgb(255, 216, 100);
+    color: rgb(255, 248, 156);
     font-family:sans-serif;
     font-weight:bold;
     font-size:20px;
 }
 
 .div1 {
-    background: rgb(105, 12, 105);
+    background: rgb(80, 4, 80);
     margin: 0 50px; display:flex; align-items:stretch; width:calc(100%-50px); overflow:hidden; border-radius:10px;
 }
 .div2 {
-    background: #881688;
+    background: #6b0a6b;
     float:right; width:20%; border-radius:10px;
 }
