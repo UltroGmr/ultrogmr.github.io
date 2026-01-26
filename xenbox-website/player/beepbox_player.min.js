@@ -48,7 +48,6 @@ var beepbox = (function (exports) {
     Config.attackVal = 0;
     Config.releaseVal = 0.25;
     Config.scales = toNameMap([
-        { name: "[[GENERATE FROM INTERVAL]]", realName: "custom", generator: "c", start: 0, size: 7 },
         { name: "Free", realName: "chromatic", generator: "s", start: 0, size: 31 },
         { name: "Major", realName: "ionian", generator: "3/2", start: -1, size: 7 },
         { name: "Minor", realName: "aeolian", generator: "3/2", start: -4, size: 7 },
@@ -58,6 +57,8 @@ var beepbox = (function (exports) {
         { name: "Phrygian", realName: "phrygian", generator: "3/2", start: -5, size: 7 },
         { name: "Locrian", realName: "locrian", generator: "3/2", start: -6, size: 7 },
         { name: "Whole Tone", realName: "whole tone", generator: "9/8", start: 0, size: 6 },
+        { name: "Major Thirds", realName: "major thirds", generator: "5/4", start: -1, size: 7 },
+        { name: "Minor Thirds", realName: "minor thirds", generator: "6/5", start: -1, size: 7 },
         { name: "Orwell[9]", realName: "orwell 9", generator: "1.1694307656", start: 0, size: 9 },
     ]);
     Config.keys = toNameMap([
@@ -341,6 +342,7 @@ var beepbox = (function (exports) {
     Config.noiseInterval = 6;
     Config.octaveHeight = 2.0;
     Config.pitchesPerOctave = 19;
+    Config.customScaleData = new Float32Array(0);
     Config.maxPitchesPerOctave = 31;
     Config.drumCount = 12;
     Config.pitchOctaves = 8;
@@ -4446,7 +4448,7 @@ var beepbox = (function (exports) {
         }
     }
     EditorConfig.version = "2.6";
-    EditorConfig.versionDisplayName = "JummBox " + EditorConfig.version;
+    EditorConfig.versionDisplayName = "XenBox " + EditorConfig.version;
     EditorConfig.releaseNotesURL = "https://jummbus.bitbucket.io/patch_notes/" + EditorConfig.version + ".html";
     EditorConfig.isOnMac = /^Mac/i.test(navigator.platform) || /Mac OS X/i.test(navigator.userAgent) || /^(iPhone|iPad|iPod)/i.test(navigator.platform) || /(iPhone|iPad|iPod)/i.test(navigator.userAgent);
     EditorConfig.ctrlSymbol = EditorConfig.isOnMac ? "⌘" : "Ctrl+";
@@ -7003,7 +7005,21 @@ var beepbox = (function (exports) {
             return largest;
         }
         static frequencyFromPitch(pitch) {
-            return 440.0 * Math.pow(Config.octaveHeight, (pitch - (69.0)) / Config.pitchesPerOctave);
+            if (Config.customScaleData.length == 0) {
+                return 440.0 * Math.pow(Config.octaveHeight, (pitch - (69.0)) / Config.pitchesPerOctave);
+            }
+            else {
+                let noteCount = Config.customScaleData.length;
+                let equivalencyInterval = Config.customScaleData[noteCount - 1];
+                let distance = (pitch - 69.0) - 1;
+                let distLow = Math.floor(distance);
+                let distHigh = Math.floor(distance);
+                let pitchIdxLow = ((distLow % noteCount) + noteCount) % noteCount;
+                let pitchIdxHigh = ((distHigh % noteCount) + noteCount) % noteCount;
+                let low = 440.0 * Config.customScaleData[pitchIdxLow] * Math.pow(equivalencyInterval, Math.floor(distance / noteCount));
+                let high = 440.0 * Config.customScaleData[pitchIdxHigh] * Math.pow(equivalencyInterval, Math.floor(distance / noteCount));
+                return low + (pitch - Math.floor(pitch)) * (high - low);
+            }
         }
         addEnvelope(target, index, envelope) {
             let makeEmpty = false;
@@ -7245,7 +7261,6 @@ var beepbox = (function (exports) {
         toBase64String() {
             let bits;
             let buffer = [];
-            buffer.push(89, base64IntToCharCode[Math.round(Config.getPitchesPerOctave())]);
             buffer.push(Song._variant);
             buffer.push(base64IntToCharCode[Song._latestJummBoxVersion]);
             buffer.push(78);
@@ -7264,6 +7279,7 @@ var beepbox = (function (exports) {
             buffer.push(103, base64IntToCharCode[(this.barCount - 1) >> 6], base64IntToCharCode[(this.barCount - 1) & 0x3f]);
             buffer.push(106, base64IntToCharCode[(this.patternsPerChannel - 1) >> 6], base64IntToCharCode[(this.patternsPerChannel - 1) & 0x3f]);
             buffer.push(114, base64IntToCharCode[this.rhythm]);
+            buffer.push(89, base64IntToCharCode[Math.round(Config.getPitchesPerOctave())]);
             buffer.push(79);
             if (this.compressionRatio != 1.0 || this.limitRatio != 1.0 || this.limitRise != 4000.0 || this.limitDecay != 4.0 || this.limitThreshold != 1.0 || this.compressionThreshold != 1.0 || this.masterGain != 1.0) {
                 buffer.push(base64IntToCharCode[Math.round(this.compressionRatio < 1 ? this.compressionRatio * 10 : 10 + (this.compressionRatio - 1) * 60)]);
@@ -7803,6 +7819,7 @@ var beepbox = (function (exports) {
                     case 89:
                         {
                             Config.setPitchesPerOctave(base64CharCodeToInt[compressed.charCodeAt(charIndex++)]);
+                            console.log(compressed.substring(charIndex, charIndex + 1));
                         }
                         break;
                     case 78:
@@ -9399,6 +9416,7 @@ var beepbox = (function (exports) {
                 "compressionRatio": this.compressionRatio,
                 "layeredInstruments": this.layeredInstruments,
                 "patternInstruments": this.patternInstruments,
+                "pitchesPerOctave": Config.pitchesPerOctave,
                 "channels": channelArray,
             };
         }
@@ -9538,6 +9556,9 @@ var beepbox = (function (exports) {
             if (jsonObject["loopBars"] != undefined) {
                 this.loopLength = clamp(1, this.barCount - this.loopStart + 1, jsonObject["loopBars"] | 0);
             }
+            if (jsonObject["pitchesPerOctave"] != undefined) {
+                Config.pitchesPerOctave = jsonObject["pitchesPerOctave"];
+            }
             const newPitchChannels = [];
             const newNoiseChannels = [];
             const newModChannels = [];
@@ -9639,7 +9660,7 @@ var beepbox = (function (exports) {
             this.masterGain = 1.0;
         }
     }
-    Song._format = "JummBox";
+    Song._format = "XenBox";
     Song._oldestBeepboxVersion = 2;
     Song._latestBeepboxVersion = 9;
     Song._oldestJummBoxVersion = 1;
