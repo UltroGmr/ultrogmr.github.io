@@ -93,22 +93,39 @@ let majThirdOff = 0
 let minThirdOff = 0
 let septThirdOff = 0
 
+const shepardToneMode = true
+
 const audioCtx = new AudioContext();
 
 function playPitch(step, mult) {
+    const baseFreq = 440; // A3
+
+    if (shepardToneMode) {
+        for (let i = -10; i < 11; i++) {
+            let freq = baseFreq * Math.pow(2, step / edo) * mult * Math.pow(2.0, i);
+            let amp = 1 / (Math.abs(baseFreq - freq) / 55.0 + 1.0)
+
+            playPitchHelper(freq, 0.125 * amp)
+        }
+    } else {
+        let freq = baseFreq * Math.pow(2, step / edo) * mult;
+        playPitchHelper(freq, 0.125)
+    }
+}
+function playPitchHelper(freq, amp) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
     const edo = edoInput.valueAsNumber;
-    const baseFreq = 440; // A3
 
-    osc.frequency.value = baseFreq * Math.pow(2, step / edo) * mult;
+    osc.frequency.value = freq
+
     osc.type = "sine"; // "square", "triangle", "sawtooth"
 
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     
-    gain.gain.setValueAtTime(0.125, audioCtx.currentTime);
+    gain.gain.setValueAtTime(amp, audioCtx.currentTime);
     gain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 0.5);
 
     osc.start();
