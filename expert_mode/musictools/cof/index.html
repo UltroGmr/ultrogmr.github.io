@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+edo <input id="edo" type="number" value="12"><br>
+<button id="recalc">go</button>
+
+<p id="fifthacc"></p>
+<p id="maj3acc"></p>
+<p id="min3acc"></p>
+
+<div id="circle" style="position:absolute; left:50px; top:185px"></div>
+
+<div id="controls" style="display:grid;   grid-template-columns: 50px 100px 50px 100px 50px 100px;   gap: 10px 20px;   position:fixed; bottom:15px; left:15px">
+    <div>z</div><div>-3/2</div>
+    <div>a</div><div>-5/4</div>
+    <div>q</div><div>-6/5</div>
+    <div>x</div><div>+3/2</div>
+    <div>s</div><div>+5/4</div>
+    <div>w</div><div>+6/5</div>
+</div>
+
+<div style="position:fixed; top:15px;right:15px;"><button id="help">help</button></div>
+
+</div>
+
+<script>
+
+const scale = 1.0
+
+const pi = 3.14159265358979323846264338327950959
+
+const edoInput = document.getElementById("edo")
+const circleParent = document.getElementById("circle")
+
+function getIntervalSteps(interval, edo) {
+    let trueSteps = Math.log(interval) / Math.log(Math.pow(2, 1.0/edo))
+
+    let closestSteps = Math.round(trueSteps)
+
+    let offset = Math.abs(closestSteps - trueSteps)
+
+    return [closestSteps, offset]
+}
+
+function normalizeSteps(steps) {
+    // clamp a step count to octave range
+    if (steps >= edo) {return steps % edo}
+    if (steps < 0) {return ((steps % edo) + edo) % edo}
+    return steps
+}
+
+function refresh() {
+    let forward = normalizeSteps(selectedPitch + fifthSteps)
+    let backward = normalizeSteps(selectedPitch - fifthSteps)
+
+    let trioA = normalizeSteps(selectedPitch + (fifthSteps * edo / 3))
+    let trioB = normalizeSteps(selectedPitch - (fifthSteps * edo / 3))
+
+
+    let complement = normalizeSteps(selectedPitch + (fifthSteps * edo / 2))
+
+    for (const child of circleParent.children) {
+        let steps = child.querySelector(".steps")
+        let stepCount = parseInt(steps.textContent)
+
+        child.style.color = "#000000"
+        if (stepCount == selectedPitch) {
+            child.style.color = `hsl(${startHue}, ${startSat}%, ${startLight}%)`//"#d1d115"
+        } else if (stepCount == forward || stepCount == backward) {
+            child.style.color = `hsl(${startHue}, ${startSat/1.618}%, ${startLight/2.0}%)`//"#d1d115"
+        } else if (stepCount == complement) {
+            child.style.color = `hsl(${startHue + 180}, ${startSat}%, ${startLight}%)`
+        } else if (stepCount == trioA) {
+            child.style.color = `hsl(${startHue + 120}, ${startSat}%, ${startLight}%)`
+        } else if (stepCount == trioB) {
+            child.style.color = `hsl(${startHue - 120}, ${startSat}%, ${startLight}%)`
+        }
+    }
+}
+
+const startHue = 60
+const startSat = 96
+const startLight = 44
+
+let edo = 0
+let selectedPitch = 0
+let majThirdSteps = 0
+let minThirdSteps = 0
+let septThirdSteps = 0
+let fifthSteps = 0
+
+let fifthOff = 0
+let majThirdOff = 0
+let minThirdOff = 0
+let septThirdOff = 0
+
+const audioCtx = new AudioContext();
+
+function playPitch(step, mult) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    const edo = edoInput.valueAsNumber;
+    const baseFreq = 440; // A3
+
+    osc.frequency.value = baseFreq * Math.pow(2, step / edo) * mult;
+    osc.type = "sine"; // "square", "triangle", "sawtooth"
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    gain.gain.setValueAtTime(0.125, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 0.5);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.5);
+}
+
+function setPitch(me) {
+    selectedPitch = me
+    playPitch(me, 1.0)
+    if (keyDown["KeyM"]) {
+        playPitch(me, 5.0 / 4.0)
+        playPitch(me, 3.0 / 2.0)
+        playPitch(me, 1.875)
+    }
+    if (keyDown["KeyN"]) {
+        playPitch(me, 6.0 / 5.0)
+        playPitch(me, 3.0 / 2.0)
+        playPitch(me, 1.8)
+    }
+    if (keyDown["KeyL"]) {
+        playPitch(me, 5.0 / 4.0)
+        playPitch(me, 25.0 / 16.0)
+    }
+    if (keyDown["KeyK"]) {
+        playPitch(me, 6.0 / 5.0)
+        playPitch(me, 36.0 / 25.0)
+        playPitch(me, (36.0 * 6.0) / (25.0 * 5.0))
+    }
+    refresh()
+}
+
+function createLabel(x, y, cur, fontsize) {
+    // font size starts getting a bit much past 19edo
+    fontsize += fontsize * Math.min( ((1.0 / edo) - (1.0 / 19.0)) * 19.0, 0.0 )
+
+    const label = document.createElement("div")
+    label.innerHTML = `<div
+        style="position:absolute; left:${x}px; top:${y}px; transform: translate(-50%, -50%)">
+       
+        <div class="container" style="font-size:${fontsize}em">
+            <h1 style="display:inline;" class="steps">${cur}</h1>[${edo}]
+        </div>
+        
+        </div>`
+    
+    let me = cur
+    label.querySelector(".container").addEventListener('click', () => {
+        /*selectedPitch = me
+        playPitch(me)
+        refresh()*/
+        setPitch(me)
+    })
+    circleParent.appendChild(label)
+}
+
+const keyDown = {};
+
+document.addEventListener("keydown", (event) => {
+    switch (event.code) {
+        case "KeyZ":
+            setPitch(normalizeSteps(selectedPitch - fifthSteps)); break
+        case "KeyX":
+            setPitch(normalizeSteps(selectedPitch + fifthSteps)); break
+        case "KeyA":
+            setPitch(normalizeSteps(selectedPitch - majThirdSteps)); break
+        case "KeyS":
+            setPitch(normalizeSteps(selectedPitch + majThirdSteps)); break
+        case "KeyQ":
+            setPitch(normalizeSteps(selectedPitch - minThirdSteps)); break
+        case "KeyW":
+            setPitch(normalizeSteps(selectedPitch + minThirdSteps)); break
+        case "Space":
+            if ((edo % 2) == 0) {setPitch(normalizeSteps(selectedPitch + fifthSteps * (edo / 2))); break}
+    }
+    keyDown[event.code] = true
+});
+
+document.addEventListener("keyup", (event) => {
+    keyDown[event.code] = false
+});
+
+function recalc() {
+    circleParent.replaceChildren();
+
+    selectedPitch = 0
+    
+    edo = edoInput.valueAsNumber
+
+    let arr = getIntervalSteps(3.0/2.0, edo)
+    fifthSteps = arr[0]
+    fifthOff = arr[1]
+
+    arr = getIntervalSteps(5.0/4.0, edo)
+    majThirdSteps = arr[0]
+    majThirdOff = arr[1]
+    
+    arr = getIntervalSteps(6.0/5.0, edo)
+    minThirdSteps = arr[0]
+    minThirdOff = arr[1]
+
+    arr = getIntervalSteps(7.0/6.0, edo)
+    septThirdSteps = arr[0]
+    septThirdOff = arr[1]
+
+    //alert(fifthSteps)
+
+    document.getElementById("fifthacc").textContent = "3/2 offset "+fifthOff.toString()
+    document.getElementById("maj3acc").textContent = "5/4 offset "+majThirdOff.toString()
+    document.getElementById("min3acc").textContent = "6/5 offset "+minThirdOff.toString()
+
+    let cur = 0;
+    for (let i = 0; i < edo; i++) {
+        const x = Math.sin(i / edo * pi * 2.0) * scale * 200 + 200
+        const y = -Math.cos(i / edo * pi * 2.0) * scale * 200 + 200
+
+        createLabel(x, y, cur, 1)
+
+        cur += fifthSteps
+        if (cur >= edo) {cur -= edo}
+    }
+
+
+    cur = 0;
+    for (let i = 0; i < edo; i++) {
+        const x = Math.sin(i / edo * pi * 2.0) * scale * 141 + 200
+        const y = -Math.cos(i / edo * pi * 2.0) * scale * 141 + 200
+
+        /*const label = document.createElement("div")
+        label.innerHTML = `<div
+            style="position:absolute; left:${x}px; top:${y}px; transform: translate(-50%, -50%)">
+           
+            <div class="container" style="font-size:0.618em">
+                <h1 style="display:inline;" class="steps">${cur}</h1>[${edo}]
+            </div>
+           
+            </div>`
+        
+        let me = cur
+        label.querySelector(".container").addEventListener('click', () => {
+            selectedPitch = me
+            refresh()
+        })
+        circleParent.appendChild(label)*/
+        createLabel(x, y, cur, 0.618)
+
+        cur += majThirdSteps
+        if (cur >= edo) {cur -= edo}
+    }
+}
+
+document.getElementById("help").addEventListener('click', () => {alert("figure it out yourself")})
+
+document.getElementById("recalc").addEventListener('click', () => {recalc()})
+recalc()
+
+</script>
