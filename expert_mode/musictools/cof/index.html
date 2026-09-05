@@ -199,6 +199,10 @@ document.addEventListener("keydown", (event) => {
             setPitch(normalizeSteps(selectedPitch + minThirdSteps)); break
         case "Space":
             if ((edo % 2) == 0) {setPitch(normalizeSteps(selectedPitch + fifthSteps * (edo / 2))); break}
+        case "ArrowDown":
+            setPitch(normalizeSteps(selectedPitch - 1)); break
+        case "ArrowUp":
+            setPitch(normalizeSteps(selectedPitch + 1)); break
     }
     keyDown[event.code] = true
 });
